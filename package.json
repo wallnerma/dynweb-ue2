@@ -1,0 +1,24 @@
+{
+  "name": "ue2-wallner-wresnik",
+  "version": "1.0.0",
+  "description": "Zweite Hausuebung fuer dynamisches Web",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wallnerma/dynweb-ue2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wallnerma/dynweb-ue2/issues"
+  },
+  "homepage": "https://github.com/wallnerma/dynweb-ue2#readme",
+  "dependencies": {
+    "handlebars": "^4.0.11",
+    "parse-csv": "^0.2.0"
+  }
+}

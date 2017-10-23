@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/wallnerma/dynweb-ue2#readme",
   "dependencies": {
+    "csv-parse": "^2.0.0",
     "handlebars": "^4.0.11",
-    "parse-csv": "^0.2.0"
   }
 }

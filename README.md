@@ -1,6 +1,6 @@
 # dynweb-ue2
 Zweite Hausübung für dynamisches Web.
 
-##Team
+## Team
 * Marcus Wallner
 * Georg Wresnik

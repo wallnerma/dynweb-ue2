@@ -26,8 +26,27 @@ app.templates.home = hbs.compile(
     </head>
     <body>
         {{> navigation}}
-        <h1>Übung 2 | Startseite</h1>
+        <h1>Hausübung 2 | Startseite</h1>
+        <h3>Spieltage der Deutschen Bundesliga Saison 2017/2018</h3>
         <p>&copy; {{name}}</p>
+    </body>
+    </html>`);
+
+app.templates.matchday = hbs.compile(
+    `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Matchdays - UE2</title>
+    </head>
+    <body>
+        {{> navigation}}
+        <h2>Spieltage</h2>
+        <ul>
+            {{#each matchDay}}
+                <li>Spieltag {{this}}</li> <br />
+            {{/each}}
+        </ul>
     </body>
     </html>`);
 
@@ -52,6 +71,7 @@ app.templates.filterPage = hbs.compile(
 const navigationPartial =
     `<ul style="list-style: none; padding: 0">
         <li><a href="/">Home</a></li>
+        <li><a href="/matchdays">zu den Spieltagen</a></li>
         <li><a href="/fixtures/count">Anzahl Spieltage</a></li>
         <li><a href="/filter">Matchsuche</a></li>
     </ul>`;
@@ -82,9 +102,16 @@ console.log("After reading CSV");
 function getHome(request, response) {
     response.statusCode = 200;
     const data = {
-        name: "Robert Möstl"
+        name: "Marcus Wallner, Georg Wresnik"
     };
     response.write(app.templates.home(data));
+}
+
+function getMatchdays(request, response) {
+    response.statusCode = 200;
+    const data = app.fixtures;
+    response.write(app.templates.fixtures)
+
 }
 
 function getFilterPage(request, response) {
@@ -103,16 +130,22 @@ function getFixturesCount(request, response) {
 /* Setting up the server */
 /* ********************* */
 
-const server = http.createServer((request, response) => {
+const server = http.createServer(function(request, response) {
     const parsedUrl = url.parse(request.url);
 
-    if (parsedUrl.pathname === '/') {
+    if ( !(request.method === 'GET') ) {
+        response.statusCode = 405;
+        response.write("405 Method Not Allowed");
+    } else if (parsedUrl.pathname === '/') {
         getHome(request, response);
-    } else if (parsedUrl.pathname === '/fixtures/count') {
+    } else if (parsedUrl.pathname === '/fixtures/count' || parsedUrl.pathname === '/fixtures/count/') {
         getFixturesCount(request, response);
-    } else if (parsedUrl.pathname === '/filter') {
+    } else if (parsedUrl.pathname === '/filter' || parsedUrl.pathname === '/filter/') {
         getFilterPage(request, response);
-    } else {
+    } else if (parsedUrl.pathname === '/matchdays' || parsedUrl.pathname === '/matchdays/') {
+        getMatchdays(request, response);
+    }
+    else {
         response.statusCode = 404;
         response.write("404 Not Found");
     }

@@ -69,7 +69,7 @@ app.templates.matchday = hbs.compile(
             <h2>1. Datensatz</h2>
               <ul>
                 {{#each this}}
-                  <li>Date: {{date}}</li>
+                  <li>Date: <a href="/matchdays/{{date}}">{{date}}</a></li>
                 {{/each}}
               </ul>
         </body>
@@ -154,7 +154,11 @@ function getFirstFicturesRow(request, response){
   response.statusCode = 200;
   response.setHeader('Content-Type', 'text/html');
   //response.write("" + app.fixtures[1].matchDay);
-
+  response.write(app.templates.matchday(app.fixtures[0]));
+}
+function getMatchDay(request, response){
+  response.statusCode = 200;
+  response.setHeader('Content-Type', 'text/html');
   response.write(app.templates.matchday(app.fixtures[0]));
 }
 
@@ -165,6 +169,7 @@ function getFirstFicturesRow(request, response){
 
 const server = http.createServer(function(request, response) {
     const parsedUrl = url.parse(request.url);
+    console.log(parsedUrl);
 
     if ( !(request.method === 'GET') ) {
         response.statusCode = 405;
@@ -177,9 +182,12 @@ const server = http.createServer(function(request, response) {
         getFilterPage(request, response);
     } else if (parsedUrl.pathname === '/firstdata' || parsedUrl.pathname === '/firstdata/') {
         getFirstFicturesRow(request, response);
-    } else if (parsedUrl.pathname === '/matchdays' || parsedUrl.pathname === '/matchdays/') {
+    } else if (parsedUrl.pathname === '/matchdays') {
         getMatchdays(request, response);
+    } else if (parsedUrl.pathname.startsWith('/matchdays/')) {
+        getMatchDay(request, response);
     }
+
     else {
         response.statusCode = 404;
         response.write("404 Not Found");

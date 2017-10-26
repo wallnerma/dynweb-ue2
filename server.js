@@ -57,6 +57,24 @@ app.templates.matchday = hbs.compile(
     </body>
     </html>`);
 
+    app.templates.matchdays = hbs.compile(
+        `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Matchdays - UE2</title>
+        </head>
+        <body>
+            {{> navigation}}
+            <h2>1. Datensatz</h2>
+              <ul>
+                {{#each this}}
+                  <li>Date: {{date}}</li>
+                {{/each}}
+              </ul>
+        </body>
+        </html>`);
+
 app.templates.filterPage = hbs.compile(
     `<!DOCTYPE html>
     <html lang="en">
@@ -119,8 +137,7 @@ function getHome(request, response) {
 function getMatchdays(request, response) {
     response.statusCode = 200;
     const data = app.fixtures;
-    response.write(app.templates.fixtures)
-
+    response.write(app.templates.matchdays(app.fixtures))
 }
 
 function getFilterPage(request, response) {

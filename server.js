@@ -41,12 +41,19 @@ app.templates.matchday = hbs.compile(
     </head>
     <body>
         {{> navigation}}
-        <h2>Spieltage</h2>
-        <ul>
-            {{#each matchDay}}
-                <li>Spieltag {{this}}</li> <br />
-            {{/each}}
-        </ul>
+        <h2>1. Datensatz</h2>
+          <ul>
+            <li>Matchday: {{matchDay}}</li>
+            <li>Name Home Club: {{nameHomeClub}}</li>
+            <li>Name Home Club Short: {{nameHomeClubShort}}</li>
+            <li>Name Away Club: {{nameAwayClub}}</li>
+            <li>Name Away Club Short: {{nameAwayClubShort}}
+            <li>Date: {{date}}</li>
+            <li>Shortdate:  {{shortDate}}</li>
+            <li>Status: {{status}}</li>
+            <li>Goals Home Club: {{goalsHomeClub}}</li>
+            <li>Goals Away Club: {{goalsAwayClub}}</li>
+          </ul>
     </body>
     </html>`);
 
@@ -71,6 +78,7 @@ app.templates.filterPage = hbs.compile(
 const navigationPartial =
     `<ul style="list-style: none; padding: 0">
         <li><a href="/">Home</a></li>
+        <li><a href="/firstdata">1. Datensatz</a></li>
         <li><a href="/matchdays">zu den Spieltagen</a></li>
         <li><a href="/fixtures/count">Anzahl Spieltage</a></li>
         <li><a href="/filter">Matchsuche</a></li>
@@ -89,6 +97,7 @@ fs.readFile('deutsche-bundesliga-2017-2018-fixtures.csv', 'utf-8', function(err,
     };
     parseCSV(data, options, function(err, result) {
         console.log("Setting app's fixtures property, finally!!!");
+        console.log(result[0]);
         app.fixtures = result;
     });
 });
@@ -124,6 +133,13 @@ function getFixturesCount(request, response) {
     response.setHeader('Content-Type', 'text/plain');
     response.write("" + app.fixtures.length);
 }
+function getFirstFicturesRow(request, response){
+  response.statusCode = 200;
+  response.setHeader('Content-Type', 'text/html');
+  //response.write("" + app.fixtures[1].matchDay);
+
+  response.write(app.templates.matchday(app.fixtures[0]));
+}
 
 
 /* ********************* */
@@ -142,6 +158,8 @@ const server = http.createServer(function(request, response) {
         getFixturesCount(request, response);
     } else if (parsedUrl.pathname === '/filter' || parsedUrl.pathname === '/filter/') {
         getFilterPage(request, response);
+    } else if (parsedUrl.pathname === '/firstdata' || parsedUrl.pathname === '/firstdata/') {
+        getFirstFicturesRow(request, response);
     } else if (parsedUrl.pathname === '/matchdays' || parsedUrl.pathname === '/matchdays/') {
         getMatchdays(request, response);
     }

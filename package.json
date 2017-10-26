@@ -1,7 +1,7 @@
 {
-  "name": "ue2-wallner-wresnik",
+  "name": "dynweb-ue2",
   "version": "1.0.0",
-  "description": "Zweite Hausuebung fuer dynamisches Web",
+  "description": "Zweite Hausübung für dynamisches Web.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,9 +16,5 @@
   "bugs": {
     "url": "https://github.com/wallnerma/dynweb-ue2/issues"
   },
-  "homepage": "https://github.com/wallnerma/dynweb-ue2#readme",
-  "dependencies": {
-    "csv-parse": "^2.0.0",
-    "handlebars": "^4.0.11",
-  }
+  "homepage": "https://github.com/wallnerma/dynweb-ue2#readme"
 }

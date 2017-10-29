@@ -32,7 +32,71 @@ app.templates.home = hbs.compile(
     </body>
     </html>`);
 
-app.templates.matchday = hbs.compile(
+    app.templates.matchdays = hbs.compile(
+        `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Matchdays - UE2</title>
+        </head>
+        <body>
+            {{> navigation}}
+            <h2>1. Datensatz</h2>
+              <table>
+                <tr>
+                  <th>Spieltag</th>
+                  <th>Gegner</th>
+                  <th>Ergebnis</th>
+                  <th>Datum</th>
+                  <th>Status</th>
+
+                {{#each this}}
+                <tr>
+                  <td><a href="/matchdays/{{matchDay}}">{{matchDay}}</a></td>
+                  <td>{{nameHomeClubShort}} gegen {{nameAwayClubShort}}</td>
+                  <td>{{goalsHomeClub}} : {{goalsAwayClub}}</td>
+                  <td>{{date}}</td>
+                  <td>{{status}}</td>
+                </tr>
+                {{/each}}
+
+                </table>
+        </body>
+        </html>`);
+
+        app.templates.matchday = hbs.compile(
+            `<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Matchdays - UE2</title>
+            </head>
+            <body>
+                {{> navigation}}
+                <h2>1. Datensatz</h2>
+                  <table>
+                    <tr>
+                      <th>Spieltag</th>
+                      <th>Gegner</th>
+                      <th>Ergebnis</th>
+                      <th>Datum</th>
+                      <th>Status</th>
+
+                    {{#each this}}
+                    <tr>
+                      <td>{{matchDay}}</td>
+                      <td>{{nameHomeClubShort}} gegen {{nameAwayClubShort}}</td>
+                      <td>{{goalsHomeClub}} : {{goalsAwayClub}}</td>
+                      <td>{{date}}</td>
+                      <td>{{status}}</td>
+                    </tr>
+                    {{/each}}
+
+                    </table>
+            </body>
+            </html>`);
+
+app.templates.matchday_old = hbs.compile(
     `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -57,7 +121,7 @@ app.templates.matchday = hbs.compile(
     </body>
     </html>`);
 
-    app.templates.matchdays = hbs.compile(
+    app.templates.matchdays_old = hbs.compile(
         `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -156,10 +220,23 @@ function getFirstFicturesRow(request, response){
   //response.write("" + app.fixtures[1].matchDay);
   response.write(app.templates.matchday(app.fixtures[0]));
 }
-function getMatchDay(request, response){
+function getMatchDay(request, response, day){
+
+  var day_Array = [];
+
+  for(i = 0; i < app.fixtures.length; i++)
+  {
+    if(app.fixtures[i].matchDay === day)
+    {
+      console.log("added");
+      day_Array.push(app.fixtures[i]);
+    }
+  }
+
+
   response.statusCode = 200;
   response.setHeader('Content-Type', 'text/html');
-  response.write(app.templates.matchday(app.fixtures[0]));
+  response.write(app.templates.matchday(day_Array));
 }
 
 
@@ -185,7 +262,7 @@ const server = http.createServer(function(request, response) {
     } else if (parsedUrl.pathname === '/matchdays') {
         getMatchdays(request, response);
     } else if (parsedUrl.pathname.startsWith('/matchdays/')) {
-        getMatchDay(request, response);
+        getMatchDay(request, response,1);
     }
 
     else {

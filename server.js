@@ -41,7 +41,7 @@ app.templates.home = hbs.compile(
         </head>
         <body>
             {{> navigation}}
-            <h2>1. Datensatz</h2>
+            <h2>Matchdays</h2>
               <table>
                 <tr>
                   <th>Spieltag</th>
@@ -133,7 +133,7 @@ const headerPartial =
 hbs.registerPartial('header',headerPartial);
 
 const footerPartial =
-  `<footer>&copy; Georg Wresnik & Markus Wallner 2018</footer>`;
+  `<footer>&copy; Georg Wresnik & Marcus Wallner 2017</footer>`;
 
 hbs.registerPartial("footer", footerPartial);
 
@@ -150,7 +150,6 @@ fs.readFile('deutsche-bundesliga-2017-2018-fixtures.csv', 'utf-8', function(err,
     };
     parseCSV(data, options, function(err, result) {
         console.log("Setting app's fixtures property, finally!!!");
-        console.log(result[0]);
         app.fixtures = result;
     });
 });
@@ -188,7 +187,6 @@ function getMatchDay(request, response, day){
   {
     if(app.fixtures[i].matchDay === day)
     {
-      console.log("added");
       day_Array.push(app.fixtures[i]);
     }
   }
@@ -222,13 +220,10 @@ const server = http.createServer(function(request, response) {
     } else if (parsedUrl.pathname === '/matchdays') {
         getMatchdays(request, response);
     }
-
-
      else if (parsedUrl.pathname.split('/')[1] === "matchdays" && parsedUrl.pathname.split('/')[2]) {
         let day = parseInt(parsedUrl.pathname.split('/')[2])
         getMatchDay(request, response,day);
     }
-
     else {
         response.statusCode = 404;
         response.write("404 Not Found");

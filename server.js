@@ -22,14 +22,14 @@ app.templates.home = hbs.compile(
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Startseite - UE2</title>
+        <title>{{title}} - UE2</title>
     </head>
     <body>
         {{> navigation}}
         <h1>Hausübung 2 | Startseite</h1>
         <h3>Spieltage der Deutschen Bundesliga Saison 2017/2018</h3>
-        <p>&copy; {{name}}</p>
     </body>
+    {{> footer}}
     </html>`);
 
     app.templates.matchdays = hbs.compile(
@@ -62,6 +62,7 @@ app.templates.home = hbs.compile(
 
                 </table>
         </body>
+        {{> footer}}
         </html>`);
 
         app.templates.matchday = hbs.compile(
@@ -94,50 +95,8 @@ app.templates.home = hbs.compile(
 
                     </table>
             </body>
+            {{> footer}}
             </html>`);
-
-app.templates.matchday_old = hbs.compile(
-    `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Matchdays - UE2</title>
-    </head>
-    <body>
-        {{> navigation}}
-        <h2>1. Datensatz</h2>
-          <ul>
-            <li>Matchday: {{matchDay}}</li>
-            <li>Name Home Club: {{nameHomeClub}}</li>
-            <li>Name Home Club Short: {{nameHomeClubShort}}</li>
-            <li>Name Away Club: {{nameAwayClub}}</li>
-            <li>Name Away Club Short: {{nameAwayClubShort}}
-            <li>Date: {{date}}</li>
-            <li>Shortdate:  {{shortDate}}</li>
-            <li>Status: {{status}}</li>
-            <li>Goals Home Club: {{goalsHomeClub}}</li>
-            <li>Goals Away Club: {{goalsAwayClub}}</li>
-          </ul>
-    </body>
-    </html>`);
-
-    app.templates.matchdays_old = hbs.compile(
-        `<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Matchdays - UE2</title>
-        </head>
-        <body>
-            {{> navigation}}
-            <h2>1. Datensatz</h2>
-              <ul>
-                {{#each this}}
-                  <li>Date: <a href="/matchdays/{{date}}">{{date}}</a></li>
-                {{/each}}
-              </ul>
-        </body>
-        </html>`);
 
 app.templates.filterPage = hbs.compile(
     `<!DOCTYPE html>
@@ -154,18 +113,30 @@ app.templates.filterPage = hbs.compile(
             <button type="submit">Filtern</button>
         </form>
     </body>
+    {{> footer}}
     </html>`);
 
 // Preparing template partials
 const navigationPartial =
     `<ul style="list-style: none; padding: 0">
         <li><a href="/">Home</a></li>
-        <li><a href="/firstdata">1. Datensatz</a></li>
         <li><a href="/matchdays">zu den Spieltagen</a></li>
-        <li><a href="/fixtures/count">Anzahl Spieltage</a></li>
         <li><a href="/filter">Matchsuche</a></li>
     </ul>`;
 hbs.registerPartial('navigation', navigationPartial);
+
+const headerPartial =
+    `<head>
+        <meta charset="UTF-8">
+        <title>{{title}} - UE2</title>
+    </head>`;
+hbs.registerPartial('header',headerPartial);
+
+const footerPartial =
+  `<footer>&copy; Georg Wresnik & Markus Wallner 2018</footer>`;
+
+hbs.registerPartial("footer", footerPartial);
+
 
 // Reading the example data once
 // Beware of asynchronicity!!! To understand, see the log messages in the console.
@@ -193,7 +164,7 @@ console.log("After reading CSV");
 function getHome(request, response) {
     response.statusCode = 200;
     const data = {
-        name: "Marcus Wallner, Georg Wresnik"
+        title: "Home"
     };
     response.write(app.templates.home(data));
 }
@@ -209,17 +180,6 @@ function getFilterPage(request, response) {
     response.write(app.templates.filterPage({}));
 }
 
-function getFixturesCount(request, response) {
-    response.statusCode = 200;
-    response.setHeader('Content-Type', 'text/plain');
-    response.write("" + app.fixtures.length);
-}
-function getFirstFicturesRow(request, response){
-  response.statusCode = 200;
-  response.setHeader('Content-Type', 'text/html');
-  //response.write("" + app.fixtures[1].matchDay);
-  response.write(app.templates.matchday(app.fixtures[0]));
-}
 function getMatchDay(request, response, day){
 
   var day_Array = [];
@@ -261,8 +221,12 @@ const server = http.createServer(function(request, response) {
         getFirstFicturesRow(request, response);
     } else if (parsedUrl.pathname === '/matchdays') {
         getMatchdays(request, response);
-    } else if (parsedUrl.pathname.startsWith('/matchdays/')) {
-        getMatchDay(request, response,1);
+    }
+
+
+     else if (parsedUrl.pathname.split('/')[1] === "matchdays" && parsedUrl.pathname.split('/')[2]) {
+        let day = parseInt(parsedUrl.pathname.split('/')[2])
+        getMatchDay(request, response,day);
     }
 
     else {

@@ -42,6 +42,10 @@ app.templates.home = hbs.compile(
         <body>
             {{> navigation}}
             <h2>Matchdays</h2>
+            <form action="/matchdays" method="get">
+            <input type="text" name="team">
+            <button type="submit">Filtern</button>
+        </form>
               <table>
                 <tr>
                   <th>Spieltag</th>
@@ -74,7 +78,7 @@ app.templates.home = hbs.compile(
             </head>
             <body>
                 {{> navigation}}
-                <h2>1. Datensatz</h2>
+                <h2>Detail - Ansicht</h2>
                   <table>
                     <tr>
                       <th>Spieltag</th>
@@ -97,24 +101,6 @@ app.templates.home = hbs.compile(
             </body>
             {{> footer}}
             </html>`);
-
-app.templates.filterPage = hbs.compile(
-    `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Filter - UE2</title>
-    </head>
-    <body>
-        {{> navigation}}
-        <h1>Übung 2 | Filter</h1>
-        <form action="/fixtures" method="get">
-            <input type="text" name="team">
-            <button type="submit">Filtern</button>
-        </form>
-    </body>
-    {{> footer}}
-    </html>`);
 
 // Preparing template partials
 const navigationPartial =
@@ -174,9 +160,22 @@ function getMatchdays(request, response) {
     response.write(app.templates.matchdays(app.fixtures))
 }
 
-function getFilterPage(request, response) {
-    response.statusCode = 200;
-    response.write(app.templates.filterPage({}));
+function getFilterPage(request, response, search) {
+
+  var searchitem = search.split('=')[1].toLowerCase();
+  var filter_Array = [];
+
+  for(i = 0; i < app.fixtures.length; i++)
+  {
+    if(app.fixtures[i].nameHomeClubShort.toLowerCase() === searchitem || app.fixtures[i].nameAwayClubShort.toLowerCase() === searchitem)
+    {
+      filter_Array.push(app.fixtures[i]);
+    }
+  }
+
+  response.statusCode = 200;
+  response.setHeader('Content-Type', 'text/html');
+  response.write(app.templates.matchday(filter_Array));
 }
 
 function getMatchDay(request, response, day){
@@ -204,7 +203,7 @@ function getMatchDay(request, response, day){
 
 const server = http.createServer(function(request, response) {
     const parsedUrl = url.parse(request.url);
-    console.log(parsedUrl);
+    var queryObject = parsedUrl.query;
 
     if ( !(request.method === 'GET') ) {
         response.statusCode = 405;
@@ -213,14 +212,11 @@ const server = http.createServer(function(request, response) {
         getHome(request, response);
     } else if (parsedUrl.pathname === '/fixtures/count' || parsedUrl.pathname === '/fixtures/count/') {
         getFixturesCount(request, response);
-    } else if (parsedUrl.pathname === '/filter' || parsedUrl.pathname === '/filter/') {
-        getFilterPage(request, response);
-    } else if (parsedUrl.pathname === '/firstdata' || parsedUrl.pathname === '/firstdata/') {
-        getFirstFicturesRow(request, response);
-    } else if (parsedUrl.pathname === '/matchdays') {
+    }else if (queryObject){
+      getFilterPage(request,response,queryObject);
+    }else if (parsedUrl.pathname === '/matchdays') {
         getMatchdays(request, response);
-    }
-     else if (parsedUrl.pathname.split('/')[1] === "matchdays" && parsedUrl.pathname.split('/')[2]) {
+    }else if (parsedUrl.pathname.split('/')[1] === "matchdays" && parsedUrl.pathname.split('/')[2]) {
         let day = parseInt(parsedUrl.pathname.split('/')[2])
         getMatchDay(request, response,day);
     }
